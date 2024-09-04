@@ -8,11 +8,11 @@ from torch.utils.data import TensorDataset, DataLoader, RandomSampler, Sequentia
 import time
 import datetime
 
-# Warining 방지
+# 학습 시 경고 메시지 방지
 logging.set_verbosity_error()
 
 # 파일 불러오기
-path = "reviews_sample.csv"
+path = "imdb_reviews_sample.csv"
 df = pd.read_csv(path, encoding="cp949")
 data_X = list(df['Text'].values)   # 문장 컬럼
 labels = df['Sentiment'].values     # 라벨 컬럼
@@ -22,8 +22,7 @@ print(data_X[:5])
 print("라벨")
 print(labels[:5])
 
-# 토큰화 (do_lower_case = 대소문자 변환여부)
-# tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)  # bert base
+# 데이터 샘플 출력
 num_to_print = 3
 tokenizer = MobileBertTokenizer.from_pretrained('google/mobilebert-uncased', do_lower_case=True)  # mobile bert
 inputs = tokenizer(data_X, truncation=True, max_length=256, add_special_tokens=True, padding="max_length")
@@ -41,9 +40,8 @@ for j in range(num_to_print):
 train, validation, train_y, validation_y = train_test_split(input_ids, labels, test_size=0.2, random_state=2024)
 train_masks, validation_masks, _, _ = train_test_split(attention_mask, labels, test_size=0.2, random_state=2024)
 
-# 배치
-# batch_size = 16  # bert base
-batch_size = 8  # mobile bert
+# 학습 및 검증 데이터 설정
+batch_size = 8
 train_inputs = torch.tensor(train)
 train_labels = torch.tensor(train_y)
 train_masks = torch.tensor(train_masks)
@@ -58,8 +56,7 @@ validation_data = TensorDataset(validation_inputs, validation_masks, validation_
 validation_sampler = SequentialSampler(validation_data)
 validation_dataloader = DataLoader(validation_data, sampler=validation_sampler, batch_size=batch_size)
 
-# 모델 생성
-# model = BertForSequenceClassification.from_pretrained('bert-base-uncased', num_labels=2)  # bert base
+# 모델 설정
 model = MobileBertForSequenceClassification.from_pretrained('google/mobilebert-uncased', num_labels=2)  # mobile bert
 
 # 최적화 알고리즘 설정 (AdamW)
@@ -72,7 +69,7 @@ scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_training_steps=len(train_dataloader) * epoch)
 
 for e in range(0, epoch):
-    # 훈련
+    # 학습
     print('\n\nEpoch {:} / {:}'.format(e + 1, epoch))
     print('Training')
     t0 = time.time()    # 시간 초기화
@@ -106,8 +103,8 @@ for e in range(0, epoch):
 
     # 총 loss 계산
     avg_train_loss = total_loss / len(train_dataloader)
-    print("Average training loss: {0:.2f}".format(avg_train_loss))
-    print("Training epoch took: {:}".format(str(datetime.timedelta(seconds=(int(round(time.time() - t0)))))))
+    print("평균 학습 오차 : {0:.2f}".format(avg_train_loss))
+    print("epoch 학습에 걸린 시간 : {:}".format(str(datetime.timedelta(seconds=(int(round(time.time() - t0)))))))
 
     # 검증
     print('\nValidation')
@@ -131,8 +128,8 @@ for e in range(0, epoch):
         eval_accuracy_temp = np.sum(pred_flat == labels_flat) / len(labels_flat)
         eval_accuracy += eval_accuracy_temp
         eval_steps += 1
-    print("Accuracy: {0:.2f}".format(eval_accuracy / eval_steps))
-    print("Validation took: {:}".format(str(datetime.timedelta(seconds=(int(round(time.time() - t0)))))))
+    print("검증 정확도 : {0:.2f}".format(eval_accuracy / eval_steps))
+    print("검증에 걸리 시간 : {:}".format(str(datetime.timedelta(seconds=(int(round(time.time() - t0)))))))
 
 # 모델 저장
 print('\nSave Model')
