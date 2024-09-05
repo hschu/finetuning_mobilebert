@@ -8,7 +8,7 @@ def main():
     model = 'mobilebert_custom_model_imdb.pt'
 
     # Test
-    sentence = """ I love it. """  # Test 문장
+    sentence = """ I love this movie. """  # Test 문장
     logits = test_sentence([sentence], model)  # 함수
     print("문장 : ", sentence)
 
