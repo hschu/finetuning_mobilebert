@@ -1,5 +1,9 @@
 # MobileBERT를 활용한 영화리뷰 긍부정 예측
 [![실행 영상](./thumb.png)](https://youtu.be/XIEK0ULeeB8)
+<div align="center">
+이미지를 클릭하면 유튜브 영상으로 이동합니다. 
+</div>
+
 ## 1. 들어가며
 이 저장소는 도서 **트랜스포머부터 이해하는 생성 인공지능 100제**에 수록된 사전 학습 언어 모델(Pretrained Language Model, 이하 PLM) 재학습을 다루고 있습니다. 모델은 2020년 구글이 개발한 MobileBERT이며, 소형 모델이기 때문에 노트북이나 PC에서도 재학습이 가능합니다. 이 저장소에서는 세계적인 영화 리뷰 사이트인 IMDb에서 수집된 긍부정 리뷰 데이터를 MobileBERT에 재학습시켜보고 결과를 확인해 보겠습니다. 
 
